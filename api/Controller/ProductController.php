@@ -20,7 +20,7 @@ class ProductController extends Controller {
         if ($id){
             // URI is .../products/{id}
             $p = $this->products->find($id);
-            return $p==null ? false :  $p;
+            return $p == null ? false : $p;
         }
         elseif ($color = $request->getParam("color")) {
             // URI is .../products?color={color}
@@ -30,13 +30,15 @@ class ProductController extends Controller {
             // URI is .../products?size={size}
             return $this->products->findBySize($size);
         }
-        else{
+        else {
             // URI is .../products
-            $cat = $request->getParam("category"); // is there a category parameter in the request ?
-            if ( $cat == false) // no request category, return all products
+            $cat = $request->getParam("categorys"); // is there a category parameter in the request?
+            if ($cat == false) { // no request category, return all products
                 return $this->products->findAll();
-            else // return only products of category $cat
+            } else { // return only products of category $cat
+                $cat = (int)$cat; // Convert the category to an integer
                 return $this->products->findAllByCategory($cat);
+            }
         }
     }
 
