@@ -30,16 +30,20 @@ class ProductRepository extends EntityRepository {
             permet de vérifier que la valeur transmise est "safe" et de se prémunir
             d'injection SQL.
         */
-        $requete = $this->cnx->prepare("select * from Product where id=:value"); // prepare la requête SQL
+        $requete = $this->cnx->prepare("select * FROM `Product` WHERE id= :value"); // prepare la requête SQL
         $requete->bindParam(':value', $id); // fait le lien entre le "tag" :value et la valeur de $id
         $requete->execute(); // execute la requête
         $answer = $requete->fetch(PDO::FETCH_OBJ);
         
-        if ($answer==false) return null; // may be false if the sql request failed (wrong $id value for example)
+        if ($answer == false) return null; // may be false if the sql request failed (wrong $id value for example)
         
         $p = new Product($answer->id);
-        $p->setName($answer->name);
-        $p->setIdcategory($answer->category);
+        $p->setlibelle($answer->libelle);
+        $p->setPrice($answer->price);
+        $p->setDescription($answer->description);
+        $p->setStock($answer->stock);
+        $p->setSize($answer->size);
+        $p->setColor($answer->color);
         return $p;
     }
 
@@ -50,41 +54,108 @@ class ProductRepository extends EntityRepository {
 
         $res = [];
         foreach($answer as $obj){
-            $p = new Product($obj->id);
-            $p->setName($obj->name);
-            $p->setIdcategory($obj->category);
+        $p = new Product($obj->id);
+        $p->setLibelle($obj->libelle);
+        $p->setPrice($obj->price);
+        $p->setDescription($obj->description);
+        $p->setStock($obj->stock);
+        $p->setSize($obj->size);
+        $p->setColor($obj->color);
             array_push($res, $p);
         }
        
         return $res;
     }
 
-    public function save($product){
-        $requete = $this->cnx->prepare("insert into Product (name, category) values (:name, :idcategory)");
-        $name = $product->getName();
-        $idcat = $product->getIdcategory();
-        $requete->bindParam(':name', $name );
-        $requete->bindParam(':idcategory', $idcat);
-        $answer = $requete->execute(); // an insert query returns true or false. $answer is a boolean.
 
-        if ($answer){
-            $id = $this->cnx->lastInsertId(); // retrieve the id of the last insert query
-            $product->setId($id); // set the product id to its real value.
-            return true;
+    public function findAllByCategory($category): array {
+        $requete = $this->cnx->prepare("SELECT Product.* FROM Product INNER JOIN Product_Category ON Product.id = Product_Category.id_product INNER JOIN Category ON Product_Category.id_category = Category.id_category WHERE Category.id_category = :category;");
+        $requete->bindParam(':category', $category, PDO::PARAM_INT);
+        $requete->execute();
+        $answer = $requete->fetchAll(PDO::FETCH_OBJ);
+        
+        $res = [];
+        foreach($answer as $obj){
+            $p = new Product($obj->id);
+            $p->setlibelle($obj->libelle); // Corrected method name to match the rest of the code
+            $p->setPrice($obj->price);
+            $p->setDescription($obj->description);
+            $p->setStock($obj->stock);
+            $p->setSize($obj->size);
+            $p->setColor($obj->color);
+            $res[] = $p;
         }
+       
+        return $res;
+    }
+    public function findByColor($color): array {
+        $requete = $this->cnx->prepare("select * from Product where color = :color");
+        $requete->bindParam(':color', $color, PDO::PARAM_STR);
+        $requete->execute();
+        $answer = $requete->fetchAll(PDO::FETCH_OBJ);
+
+        $res = [];
+        foreach($answer as $obj){
+            $p = new Product($obj->id);
+            $p->setlibelle($obj->libelle);
+            $p->setPrice($obj->price);
+            $p->setDescription($obj->description);
+            $p->setStock($obj->stock);
+            $p->setSize($obj->size);
+            $p->setColor($obj->color);
+            array_push($res, $p);
+        }
+       
+        return $res;
+    }
+    public function findBySize($size): array {
+        $requete = $this->cnx->prepare("select * from Product where size = :size");
+        $requete->bindParam(':size', $size, PDO::PARAM_STR);
+        $requete->execute();
+        $answer = $requete->fetchAll(PDO::FETCH_OBJ);
+
+        $res = [];
+        foreach($answer as $obj){
+            $p = new Product($obj->id);
+            $p->setlibelle($obj->libelle);
+            $p->setPrice($obj->price);
+            $p->setDescription($obj->description);
+            $p->setStock($obj->stock);
+            $p->setSize($obj->size);
+            $p->setColor($obj->color);
+            array_push($res, $p);
+        }
+       return $res;
+        
+    }
+
+    // public function save($product){
+    //     $requete = $this->cnx->prepare("insert into Product (name, category) values (:name, :idcategory)");
+    //     $name = $product->getName();
+    //     $idcat = $product->getIdcategory();
+    //     $requete->bindParam(':name', $name );
+    //     $requete->bindParam(':idcategory', $idcat);
+    //     $answer = $requete->execute(); // an insert query returns true or false. $answer is a boolean.
+
+    //     if ($answer){
+    //         $id = $this->cnx->lastInsertId(); // retrieve the id of the last insert query
+    //         $product->setId($id); // set the product id to its real value.
+    //         return true;
+    //     }
           
-        return false;
-    }
+    //     return false;
+    // }
 
-    public function delete($id){
-        // Not implemented ! TODO when needed !
-        return false;
-    }
+    // public function delete($id){
+    //     // Not implemented ! TODO when needed !
+    //     return false;
+    // }
 
-    public function update($product){
-        // Not implemented ! TODO when needed !
-        return false;
-    }
+    // public function update($product){
+    //     // Not implemented ! TODO when needed !
+    //     $requete = $this->cnx->prepare("UPDATE Product SET  size = :size, color = :color WHERE id = :id");
+    //     return false;
+    // }
 
    
     
