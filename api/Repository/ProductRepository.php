@@ -68,26 +68,7 @@ class ProductRepository extends EntityRepository {
     }
 
 
-    public function findAllByCategory($category): array {
-        $requete = $this->cnx->prepare("SELECT Product.* FROM Product INNER JOIN Product_Category ON Product.id = Product_Category.id_product INNER JOIN Category ON Product_Category.id_category = Category.id_category WHERE Category.id_category = :category;");
-        $requete->bindParam(':category', $category, PDO::PARAM_INT);
-        $requete->execute();
-        $answer = $requete->fetchAll(PDO::FETCH_OBJ);
-        
-        $res = [];
-        foreach($answer as $obj){
-            $p = new Product($obj->id);
-            $p->setlibelle($obj->libelle); // Corrected method name to match the rest of the code
-            $p->setPrice($obj->price);
-            $p->setDescription($obj->description);
-            $p->setStock($obj->stock);
-            $p->setSize($obj->size);
-            $p->setColor($obj->color);
-            $res[] = $p;
-        }
-       
-        return $res;
-    }
+
     public function findByColor($color): array {
         $requete = $this->cnx->prepare("select * from Product where color = :color");
         $requete->bindParam(':color', $color, PDO::PARAM_STR);
@@ -128,7 +109,50 @@ class ProductRepository extends EntityRepository {
        return $res;
         
     }
-
+    public function findAllByCategory($category): array {
+        // Vérifiez que la catégorie est un entier
+        if (!is_int($category)) {
+            throw new InvalidArgumentException("La catégorie doit être un entier.");
+        }
+    
+        // Préparez la requête SQL
+        $requete = $this->cnx->prepare("
+            SELECT Product.* 
+            FROM Product 
+            INNER JOIN Product_Category ON Product.id = Product_Category.id_product 
+            INNER JOIN Category ON Product_Category.id_category = Category.id_category 
+            WHERE Category.id_category = :category
+        ");
+        
+        // Liez le paramètre de catégorie
+        $requete->bindParam(':category', $category, PDO::PARAM_INT);
+        
+        // Exécutez la requête
+        $requete->execute();
+        
+        // Récupérez les résultats
+        $answer = $requete->fetchAll(PDO::FETCH_OBJ);
+        
+        // Vérifiez si des produits ont été trouvés
+        if (!$answer) {
+            return [];
+        }
+        
+        // Transformez les résultats en objets Product
+        $res = [];
+        foreach ($answer as $obj) {
+            $p = new Product($obj->id);
+            $p->setLibelle($obj->libelle); // Assurez-vous que cette méthode existe
+            $p->setPrice($obj->price);
+            $p->setDescription($obj->description);
+            $p->setStock($obj->stock);
+            $p->setSize($obj->size);
+            $p->setColor($obj->color);
+            $res[] = $p;
+        }
+        
+        return $res;
+    }
     // public function save($product){
     //     $requete = $this->cnx->prepare("insert into Product (name, category) values (:name, :idcategory)");
     //     $name = $product->getName();
