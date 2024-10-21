@@ -2,7 +2,7 @@
 
 require_once("Repository/EntityRepository.php");
 require_once("Class/Category.php");
-
+require_once("Class/Product.php");
 
 /**
  *  Classe ProductRepository
@@ -52,7 +52,7 @@ class CategoryRepository extends EntityRepository {
        
         return $res;
     }
-   
+    
     // public function save($product){
     //     $requete = $this->cnx->prepare("insert into Product (name, category) values (:name, :idcategory)");
     //     $name = $product->getName();
