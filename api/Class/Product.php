@@ -10,11 +10,18 @@
  */
 class Product implements JsonSerializable {
     private int $id; // id du produit
-    private string $name; // nom du produit
-    private int $idcategory; // id de la catégorie du produit
-
+    private string $libelle; // nom du produit
+    private int $price; // id de la catégorie du produit
+    private string $description; // description du produit
+    private int $stock; // stock du produit 
+    private array $size; // tableau des sizes disponibles pour le produit
+    private array $couleur; // tableau des couleurs disponibles pour le produit
+ 
     public function __construct(int $id){
+
         $this->id = $id;
+
+
     }
 
     /**
@@ -48,46 +55,29 @@ class Product implements JsonSerializable {
      *  
      */
     public function JsonSerialize(): mixed{
-        return ["id" => $this->id, "name" => $this->name, "category" => $this->idcategory];
+        return ["id" => $this->id, "libelle" => $this->libelle, "price" => $this->price, "description" => $this->description, "stock" => $this->stock, "size" => $this->size, "color" => $this->color];
     }
 
     /**
-     * Get the value of name
+     * Get the value of libelle
      */ 
-    public function getName()
+    public function getlibelle()
     {
-        return $this->name;
+        return $this->libelle;
     }
 
     /**
-     * Set the value of name
+     * Set the value of libelle
      *
      * @return  self
      */ 
-    public function setName($name): self
+    public function setlibelle($libelle): self
     {
-        $this->name = $name;
+        $this->libelle = $libelle;
         return $this;
     }
 
-    /**
-     * Get the value of idcategory
-     */ 
-    public function getIdcategory()
-    {
-        return $this->idcategory;
-    }
 
-    /**
-     * Set the value of idcategory
-     *
-     * @return  self
-     */ 
-    public function setIdcategory(int $idcategory): self
-    {
-        $this->idcategory = $idcategory;
-        return $this;
-    }
 
     /**
      * Set the value of id
@@ -99,4 +89,92 @@ class Product implements JsonSerializable {
         $this->id = $id;
         return $this;
     }
+    public function getprice()
+    {
+        return $this->price;
+    }
+
+    /**
+     * Set the value of price
+     *
+     * @return  self
+     */ 
+    public function setprice($price): self
+    {
+        $this->price = $price;
+        return $this;
+    }
+    public function getdescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set the value of description
+     *
+     * @return  self
+     */ 
+    public function setdescription($description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+    public function getstock()
+    {
+        return $this->stock;
+    }
+
+    /**
+     * Set the value of stock
+     *
+     * @return  self
+     */ 
+    public function setstock($stock): self
+    {
+        $this->stock = $stock;
+        return $this;
+    }
+    public function getSize()
+    {
+        return $this->Size;
+    }
+
+    /**
+     * Set the value of Size
+     *
+     * @return  self
+     */ 
+    public function setSize($size): self
+    {
+        if (is_null($size)) {
+            $this->size = [];
+        } elseif (is_string($size)) {
+            $this->size = explode(',', $size); // Assuming the string is comma-separated
+        } elseif (is_array($size)) {
+            $this->size = $size;
+        } else {
+            throw new InvalidArgumentException('Size must be an array or a comma-separated string.');
+        }
+        return $this;
+    }
+
+    /**
+     * Set the value of Color
+     *
+     * @return  self
+     */ 
+    public function setColor($color): self
+    {
+        if (is_null($color)) {
+            $this->color = [];
+        } elseif (is_string($color)) {
+            $this->color = explode(',', $color); // Assuming the string is comma-separated
+        } elseif (is_array($color)) {
+            $this->color = $color;
+        } else {
+            throw new InvalidArgumentException('Size must be an array or a comma-separated string.');
+        }
+        return $this;
+    }
+    
 }
